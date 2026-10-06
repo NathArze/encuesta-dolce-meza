@@ -27,7 +27,7 @@ var CONFIG = {
   MAX_PRODUCTOS: 6
 };
 
-var PRODUCTOS_VALIDOS = ['Pastel', 'Cupcakes', 'Galletas', 'Postres', 'Otro'];
+var PRODUCTOS_VALIDOS = ['Pasteles', 'Postres', 'Gelatina', 'Otro'];
 var CONOCIMIENTO_VALIDOS = [
   'Instagram', 'Facebook', 'Google', 'Recomendación', 'Ya soy cliente', 'Otro'
 ];
@@ -153,6 +153,19 @@ function validar(datos) {
     }
   }
 
+  var productoOtro = limpiar(datos.productoOtro, 80);
+  var eligioOtro = productos.indexOf('Otro') > -1;
+
+  if (eligioOtro && !productoOtro) {
+    return { error: 'Falta indicar qué otro producto se compró.' };
+  }
+  if (!eligioOtro && productoOtro) {
+    productoOtro = '';
+  }
+
+  var productosTexto = productos.filter(function (p) { return p !== 'Otro'; });
+  if (eligioOtro) productosTexto.push('Otro: ' + productoOtro);
+
   var conocimiento = limpiar(datos.conocimiento, 40);
   if (CONOCIMIENTO_VALIDOS.indexOf(conocimiento) === -1) {
     return { error: 'Falta indicar cómo conociste Dolce Meza.' };
@@ -172,7 +185,7 @@ function validar(datos) {
     datos: {
       nombre: nombre,
       fechaVisita: fechaVisita,
-      producto: productos.join(', '),
+      producto: productosTexto.join(', '),
       conocimiento: conocimiento,
       calificacion: calificacion,
       comentarios: comentarios

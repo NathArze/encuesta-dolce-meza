@@ -37,6 +37,8 @@ var campoFecha = $('#fechaVisita');
 var campoComentarios = $('#comentarios');
 var contadorComentarios = $('#contadorComentarios');
 var grupoProducto = $('#grupoProducto');
+var cajaOtro = $('#otroCaja');
+var campoProductoOtro = $('#productoOtro');
 var grupoConocimiento = $('#grupoConocimiento');
 var grupoCalificacion = $('#grupoCalificacion');
 var cajaEstrellas = $('#estrellas');
@@ -201,6 +203,7 @@ function pintarChips() {
     chip.classList.toggle('activo', on);
     chip.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
+  cajaOtro.hidden = estado.productos.indexOf('Otro') === -1;
   Array.prototype.forEach.call($('#chipsConocimiento').children, function (chip) {
     var on = estado.conocimiento === chip.dataset.valor;
     chip.classList.toggle('activo', on);
@@ -214,11 +217,23 @@ $('#chipsProducto').addEventListener('click', function (ev) {
   if (!chip) return;
   var valor = chip.dataset.valor;
   var i = estado.productos.indexOf(valor);
-  if (i > -1) estado.productos.splice(i, 1);
-  else estado.productos.push(valor);
+  if (i > -1) {
+    estado.productos.splice(i, 1);
+    if (valor === 'Otro') {
+      campoProductoOtro.value = '';
+      limpiarError(cajaOtro, '#errorProductoOtro');
+    }
+  } else {
+    estado.productos.push(valor);
+    if (valor === 'Otro') setTimeout(function () { campoProductoOtro.focus({ preventScroll: true }); }, 120);
+  }
   pintarChips();
   limpiarError(grupoProducto, '#errorProducto');
   actualizarProgreso();
+});
+
+campoProductoOtro.addEventListener('input', function () {
+  if (campoProductoOtro.value.trim()) limpiarError(cajaOtro, '#errorProductoOtro');
 });
 
 $('#chipsConocimiento').addEventListener('click', function (ev) {
@@ -312,6 +327,9 @@ function validar() {
   if (!estado.productos.length) {
     mostrarError(grupoProducto, '#errorProducto', 'Selecciona al menos una opción de lo que compraste.');
     errores.push($('#chipsProducto').querySelector('.chip'));
+  } else if (estado.productos.indexOf('Otro') > -1 && !campoProductoOtro.value.trim()) {
+    mostrarError(cajaOtro, '#errorProductoOtro', 'Escribe qué otro producto compraste.');
+    errores.push(campoProductoOtro);
   }
 
   if (!estado.conocimiento) {
@@ -351,6 +369,7 @@ formulario.addEventListener('submit', function (ev) {
     nombre: campoNombre.value.trim(),
     fechaVisita: campoFecha.value,
     producto: estado.productos.join(', '),
+    productoOtro: estado.productos.indexOf('Otro') > -1 ? campoProductoOtro.value.trim() : '',
     conocimiento: estado.conocimiento,
     calificacion: estado.calificacion,
     comentarios: campoComentarios.value.trim()
@@ -469,7 +488,7 @@ function mostrarGracias(datos, resultado) {
   actualizarProgreso();
   limpiarErrores();
 
-  $('#verProducto').textContent = datos.producto;
+  $('#verProducto').textContent = datos.producto.replace(/,\s*Otro$/, '') + (datos.productoOtro ? ' · Otro: ' + datos.productoOtro : '');
   $('#verCalificacion').textContent = new Array(datos.calificacion + 1).join('★') + new Array(6 - datos.calificacion).join('☆');
   $('#verFecha').textContent = formatearFecha(datos.fechaVisita);
   $('#resumenRespuesta').hidden = false;

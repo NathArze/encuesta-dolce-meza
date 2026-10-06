@@ -90,11 +90,16 @@
         <legend>&iquest;Qu&eacute; compraste? <span class="req" aria-hidden="true">*</span></legend>
         <p class="ayuda">Puedes elegir varias opciones.</p>
         <div class="chips" id="chipsProducto" role="group" aria-describedby="errorProducto">
-          <button type="button" class="chip" data-valor="Pastel" aria-pressed="false"><span aria-hidden="true">&#127856;</span> Pastel</button>
-          <button type="button" class="chip" data-valor="Cupcakes" aria-pressed="false"><span aria-hidden="true">&#129369;</span> Cupcakes</button>
-          <button type="button" class="chip" data-valor="Galletas" aria-pressed="false"><span aria-hidden="true">&#127850;</span> Galletas</button>
+          <button type="button" class="chip" data-valor="Pasteles" aria-pressed="false"><span aria-hidden="true">&#127856;</span> Pasteles</button>
           <button type="button" class="chip" data-valor="Postres" aria-pressed="false"><span aria-hidden="true">&#128154;</span> Postres</button>
+          <button type="button" class="chip" data-valor="Gelatina" aria-pressed="false"><span aria-hidden="true">&#127846;</span> Gelatina</button>
           <button type="button" class="chip" data-valor="Otro" aria-pressed="false"><span aria-hidden="true">&#10024;</span> Otro</button>
+        </div>
+        <div class="otro-caja" id="otroCaja" hidden>
+          <label for="productoOtro">&iquest;Qu&eacute; otro producto compraste?</label>
+          <input type="text" id="productoOtro" name="productoOtro" maxlength="60" placeholder="Ej. Brownies, Cheesecake, Flan..." enterkeyhint="done">
+          <p class="ayuda">Escr&iacute;brelo como quieras, con tus propias palabras.</p>
+          <p class="error" id="errorProductoOtro" role="alert" hidden></p>
         </div>
         <p class="error" id="errorProducto" role="alert" hidden></p>
       </fieldset>

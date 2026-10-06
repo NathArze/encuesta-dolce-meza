@@ -468,6 +468,21 @@ input[type=date]::-webkit-calendar-picker-indicator{ opacity:.45; cursor:pointer
   box-shadow:0 6px 16px rgba(167,20,75,.16);
 }
 
+.otro-caja{
+  margin-top:4px;
+  padding:14px 16px;
+  border-radius:var(--r-md);
+  border:1.5px dashed var(--rosa-suave);
+  background:linear-gradient(180deg, var(--rosa-nube), #FFFDFC);
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  animation:aparecer .3s ease both;
+}
+.otro-caja[hidden]{ display:none; }
+.otro-caja label{ font-size:13.5px; font-weight:700; color:var(--rosa); }
+.otro-caja .ayuda{ font-size:12px; }
+
 /* ---------- Estrellas ---------- */
 .estrellas{
   display:flex;

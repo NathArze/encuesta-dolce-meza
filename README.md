@@ -88,7 +88,7 @@ o redes sociales (los clientes que escriban desde casa también pueden opinar).
 | Fecha y hora de respuesta | Fecha real del envío (servidor) |
 | Nombre | Campo opcional del cliente |
 | Fecha de visita | Campo del cliente |
-| Qué compraste | Puede traer varios: `Pastel, Cupcakes` |
+| Qué compraste | Puede traer varios: `Pasteles, Gelatina, Otro: Brownies` |
 | Cómo conoció Dolce Meza | Una sola opción |
 | Calificación | 1 a 5 estrellas |
 | Comentarios | Texto libre (máx. 600 caracteres) |
@@ -103,6 +103,9 @@ columna ya ajustados.
   conocimiento y calificación antes de escribir).
 - **Sin envíos duplicados**: al pulsar *Enviar opinión* el botón se bloquea y
   muestra *Enviando...*; si el servidor falla, el botón queda como *Reintentar*.
+- **"Otro" con texto libre**: al elegir *Otro* aparece un campo para escribir lo
+  que sea (hasta 60 caracteres) y es obligatorio; en la hoja queda como
+  `Otro: lo que escribió el cliente`.
 - **Sin internet**: la opinión se guarda en `localStorage` y se reenvía sola al
   volver la conexión (evento `online`).
 - **Privacidad**: solo se pide nombre si el cliente quiere dejarlo; la IP no se
