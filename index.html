@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#A7144B">
+<meta name="description" content="Dolce Meza · Cuéntanos cómo fue tu visita.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Dolce Meza">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127856;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ══════════════ PANTALLA 1 · BIENVENIDA ══════════════ -->
+  <section class="pantalla pantalla--bienvenida is-activa" id="pantallaBienvenida" aria-labelledby="tituloBienvenida">
+    <div class="deco deco--arriba" aria-hidden="true">
+      <span class="deco__punto"></span><span class="deco__punto"></span><span class="deco__punto"></span>
+    </div>
+
+    <div class="centro">
+      <div class="marca">
+        <div class="marca__sello" aria-hidden="true">DM</div>
+        <h1 class="marca__nombre" id="tituloBienvenida">Dolce Meza</h1>
+        <p class="marca__firma">Repostería &amp; postres artesanales</p>
+      </div>
+
+      <div class="bienvenida">
+        <p class="bienvenida__gracias">&iexcl;Gracias por visitarnos! <span class="corazon" aria-hidden="true">&#10084;</span></p>
+        <p class="bienvenida__texto">
+          Queremos conocer un poquito sobre tu experiencia.<br>
+          Tu opini&oacute;n nos ayuda a seguir mejorando.
+        </p>
+      </div>
+
+      <div class="acciones-centro">
+        <button type="button" class="btn btn--primario btn--grande" id="btnComenzar">
+          Comenzar
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="btn__flecha"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+        </button>
+        <p class="micro">Tarda menos de 1 minuto</p>
+      </div>
+    </div>
+
+    <p class="pie">Dolce Meza &middot; Tu opini&oacute;n es importante</p>
+  </section>
+
+  <!-- ══════════════ PANTALLA 2 · FORMULARIO ══════════════ -->
+  <section class="pantalla pantalla--formulario" id="pantallaFormulario" aria-labelledby="tituloFormulario" hidden>
+
+    <header class="cabecera">
+      <button type="button" class="icono-btn" id="btnAtras" aria-label="Volver a la pantalla de bienvenida">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="cabecera__marca">
+        <strong>Dolce Meza</strong>
+        <span id="tituloFormulario">Tu opini&oacute;n</span>
+      </div>
+      <div class="progreso" role="progressbar" aria-label="Progreso del formulario" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progreso">
+        <span class="progreso__barra" id="progresoBarra"></span>
+      </div>
+    </header>
+
+    <form class="formulario" id="formulario" novalidate autocomplete="on">
+
+      <p class="seccion-titulo"><span class="seccion-num">1</span> Sobre ti</p>
+
+      <div class="campo">
+        <label for="nombre">Nombre <span class="opcional">(opcional)</span></label>
+        <input type="text" id="nombre" name="nombre" maxlength="80" placeholder="Escribe tu nombre" autocomplete="name" enterkeyhint="next">
+        <p class="error" id="errorNombre" role="alert" hidden></p>
+      </div>
+
+      <div class="campo">
+        <label for="fechaVisita">Fecha de visita <span class="req" aria-hidden="true">*</span></label>
+        <input type="date" id="fechaVisita" name="fechaVisita" required>
+        <p class="ayuda">&Uacute;ltima vez que nos visitaste.</p>
+        <p class="error" id="errorFechaVisita" role="alert" hidden></p>
+      </div>
+
+      <p class="seccion-titulo"><span class="seccion-num">2</span> Tu visita</p>
+
+      <fieldset class="campo campo--grupo" id="grupoProducto">
+        <legend>&iquest;Qu&eacute; compraste? <span class="req" aria-hidden="true">*</span></legend>
+        <p class="ayuda">Puedes elegir varias opciones.</p>
+        <div class="chips" id="chipsProducto" role="group" aria-describedby="errorProducto">
+          <button type="button" class="chip" data-valor="Pastel" aria-pressed="false"><span aria-hidden="true">&#127856;</span> Pastel</button>
+          <button type="button" class="chip" data-valor="Cupcakes" aria-pressed="false"><span aria-hidden="true">&#129369;</span> Cupcakes</button>
+          <button type="button" class="chip" data-valor="Galletas" aria-pressed="false"><span aria-hidden="true">&#127850;</span> Galletas</button>
+          <button type="button" class="chip" data-valor="Postres" aria-pressed="false"><span aria-hidden="true">&#128154;</span> Postres</button>
+          <button type="button" class="chip" data-valor="Otro" aria-pressed="false"><span aria-hidden="true">&#10024;</span> Otro</button>
+        </div>
+        <p class="error" id="errorProducto" role="alert" hidden></p>
+      </fieldset>
+
+      <fieldset class="campo campo--grupo" id="grupoConocimiento">
+        <legend>&iquest;C&oacute;mo conociste Dolce Meza? <span class="req" aria-hidden="true">*</span></legend>
+        <div class="chips chips--simple" id="chipsConocimiento" role="radiogroup" aria-describedby="errorConocimiento">
+          <button type="button" class="chip" data-valor="Instagram" role="radio" aria-checked="false"><span aria-hidden="true">&#128247;</span> Instagram</button>
+          <button type="button" class="chip" data-valor="Facebook" role="radio" aria-checked="false"><span aria-hidden="true">&#128241;</span> Facebook</button>
+          <button type="button" class="chip" data-valor="Google" role="radio" aria-checked="false"><span aria-hidden="true">&#128269;</span> Google</button>
+          <button type="button" class="chip" data-valor="Recomendaci&oacute;n" role="radio" aria-checked="false"><span aria-hidden="true">&#128075;</span> Recomendaci&oacute;n</button>
+          <button type="button" class="chip" data-valor="Ya soy cliente" role="radio" aria-checked="false"><span aria-hidden="true">&#127973;</span> Ya soy cliente</button>
+          <button type="button" class="chip" data-valor="Otro" role="radio" aria-checked="false"><span aria-hidden="true">&#10024;</span> Otro</button>
+        </div>
+        <p class="error" id="errorConocimiento" role="alert" hidden></p>
+      </fieldset>
+
+      <p class="seccion-titulo"><span class="seccion-num">3</span> Tu experiencia</p>
+
+      <fieldset class="campo campo--grupo" id="grupoCalificacion">
+        <legend>Calificaci&oacute;n <span class="req" aria-hidden="true">*</span></legend>
+        <span class="sr-only" id="labelCalificacion">&Iacute;Cu&aacute;ntas estrellas nos das?</span>
+        <div class="estrellas" id="estrellas" role="radiogroup" aria-labelledby="labelCalificacion"></div>
+        <p class="estrellas__texto" id="textoCalificacion" aria-live="polite">Toca una estrella para calificar</p>
+        <p class="error" id="errorCalificacion" role="alert" hidden></p>
+      </fieldset>
+
+      <div class="campo">
+        <label for="comentarios">Comentarios <span class="opcional">(opcional)</span></label>
+        <textarea id="comentarios" name="comentarios" rows="4" maxlength="600" placeholder="&iquest;Qu&eacute; te gust&oacute;? &iquest;Qu&eacute; podemos mejorar?"></textarea>
+        <p class="contador"><span id="contadorComentarios">0</span>/600</p>
+        <p class="error" id="errorComentarios" role="alert" hidden></p>
+      </div>
+
+      <div class="envio">
+        <button type="submit" class="btn btn--primario btn--bloque" id="btnEnviar">
+          <span class="btn__texto">Enviar opini&oacute;n</span>
+          <span class="spinner" aria-hidden="true"></span>
+        </button>
+        <p class="envio__nota" id="envioNota" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- ══════════════ PANTALLA 3 · AGRADECIMIENTO ══════════════ -->
+  <section class="pantalla pantalla--gracias" id="pantallaGracias" aria-labelledby="tituloGracias" hidden>
+
+    <div class="centro centro--gracias">
+      <div class="sello-gracias" aria-hidden="true">
+        <svg viewBox="0 0 52 52"><path d="M26 4l6.2 12.6 13.9 2-10 9.8 2.4 13.8L26 35.8 13.5 42.2l2.4-13.8-10-9.8 13.9-2z"/></svg>
+      </div>
+
+      <h2 class="gracias__titulo" id="tituloGracias">&iexcl;Gracias por tu opini&oacute;n!</h2>
+      <p class="gracias__texto" id="graciasTexto">
+        Ya la tenemos guardada. Nos ayuda muchísimo a seguir mejorando.
+      </p>
+
+      <div class="resumen" id="resumenRespuesta" hidden>
+        <div class="resumen__fila"><span>Producto</span><strong id="verProducto">&mdash;</strong></div>
+        <div class="resumen__fila"><span>Calificaci&oacute;n</span><strong id="verCalificacion" class="estrellas-mini"></strong></div>
+        <div class="resumen__fila"><span>Fecha de visita</span><strong id="verFecha">&mdash;</strong></div>
+      </div>
+
+      <div class="google-cta">
+        <p class="google-cta__titulo">&Uacute;ltimo paso</p>
+        <p class="google-cta__texto">&iquest;Nos ayudas con una rese&ntilde;a en Google?<br>Solo takes 30 segundos.</p>
+        <a class="btn btn--google" id="btnGoogle" href="#" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="google-ico">
+            <path fill="#EA4335" d="M12 10.2v3.9h5.5a4.7 4.7 0 0 1-2 3.1l3.2 2.5c1.9-1.7 3-4.3 3-7.3 0-.7-.1-1.4-.2-2H12z"/>
+            <path fill="#34A853" d="M6.6 14.3 6 14.2l-2.3 1.8a9.6 9.6 0 0 0 8.3 4.8l3.2-2.5c-1.6 1.1-3.6 1.7-5.6 1.7a6.5 6.5 0 0 1-5.1-2.3z"/>
+            <path fill="#FBBC05" d="M3.7 7.4a5.7 5.7 0 0 0 0 3.6l3-2.3a3.4 3.4 0 0 1 0-1.6l-3-2.3z"/>
+            <path fill="#4285F4" d="M12 6.2c1.7 0 3.2.6 4.4 1.7l3.3-3.3A9.6 9.6 0 0 0 12 2a9.6 9.6 0 0 0-8.3 4.6l3 2.3A6.5 6.5 0 0 1 12 6.2z"/>
+          </svg>
+          Dejar mi rese&ntilde;a en Google
+        </a>
+      </div>
+
+      <p class="micro micro--apagado" id="graciasNota" hidden></p>
+      <button type="button" class="link-btn" id="btnOtraOpinion">Enviar otra opini&oacute;n</button>
+    </div>
+
+    <p class="pie">Dolce Meza &middot; Reposter&iacute;a artesanal</p>
+  </section>
+
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

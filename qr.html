@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dolce Meza · Generador de QR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilos.css">
+<style>
+  body{ background:var(--crema); }
+  .qr-wrap{ min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:32px 20px; }
+  .qr-card{ background:var(--blanco); border-radius:var(--r-lg); box-shadow:var(--sombra-md); padding:26px 22px; width:100%; max-width:360px; text-align:center; border:1px solid var(--crema-osc); }
+  .qr-card h1{ font-family:'Cormorant Garamond',Georgia,serif; color:var(--rosa); font-size:30px; margin:0 0 4px; }
+  .qr-card p.sub{ margin:0 0 18px; font-size:13px; color:var(--cafe-claro); letter-spacing:1.5px; text-transform:uppercase; }
+  .qr-card input[type=text]{ margin-bottom:12px; }
+  #qrImagen{ width:100%; max-width:250px; aspect-ratio:1/1; object-fit:contain; border-radius:var(--r-md); background:#fff; display:none; }
+  .qr-acciones{ display:flex; flex-direction:column; gap:10px; }
+  .qr-acciones .btn{ font-size:15px; min-height:48px; }
+  .aviso{ font-size:12.5px; color:var(--cafe-claro); text-align:left; }
+  @media print{
+    body{ background:#fff; }
+    .qr-card{ box-shadow:none; border:none; }
+    .no-print{ display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="qr-wrap">
+  <div class="qr-card">
+    <h1>Dolce Meza</h1>
+    <p class="sub">Código QR de la encuesta</p>
+
+    <div class="no-print">
+      <input type="text" id="urlApp" placeholder="Pega aquí la URL de tu web app">
+      <div class="qr-acciones">
+        <button type="button" class="btn btn--primario btn--bloque" id="btnGenerar">Generar QR</button>
+        <button type="button" class="btn btn--google btn--bloque" id="btnDescargar">Descargar imagen</button>
+        <button type="button" class="btn btn--google btn--bloque" id="btnImprimir">Imprimir cartel</button>
+      </div>
+      <p class="aviso" id="aviso" style="margin-top:16px">
+        Imprime el QR y colócalo junto a la caja, el mostrador o la mesa de pedidos.
+      </p>
+    </div>
+
+    <img id="qrImagen" alt="Código QR de la encuesta de Dolce Meza">
+  </div>
+</div>
+
+<script>
+var campo = document.getElementById('urlApp');
+var imagen = document.getElementById('qrImagen');
+var aviso = document.getElementById('aviso');
+var urlActual = '';
+
+function generar() {
+  var url = campo.value.trim();
+  if (!url) {
+    aviso.textContent = 'Primero pega la URL donde está publicada la encuesta.';
+    aviso.style.color = 'var(--error)';
+    return;
+  }
+  if (!/^https?:\/\//i.test(url)) {
+    aviso.textContent = 'La URL debe empezar con https:// (necesario para que funcione en los celulares).';
+    aviso.style.color = 'var(--error)';
+    return;
+  }
+  urlActual = url;
+  var destino = 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=12&data=' + encodeURIComponent(url);
+  imagen.src = destino;
+  imagen.style.display = 'block';
+  aviso.textContent = 'Listo. Ya puedes imprimir el cartel.';
+  aviso.style.color = 'var(--exito)';
+}
+
+document.getElementById('btnGenerar').addEventListener('click', generar);
+campo.addEventListener('keydown', function (e) { if (e.key === 'Enter') generar(); });
+
+document.getElementById('btnDescargar').addEventListener('click', function () {
+  if (!urlActual) { generar(); return; }
+  var a = document.createElement('a');
+  a.href = imagen.src;
+  a.download = 'qr-dolce-meza.png';
+  a.click();
+});
+
+document.getElementById('btnImprimir').addEventListener('click', function () {
+  if (!urlActual) generar();
+  setTimeout(function () { window.print(); }, 400);
+});
+
+var params = new URLSearchParams(location.search);
+if (params.get('url')) {
+  campo.value = params.get('url');
+  generar();
+}
+</script>
+</body>
+</html>
