@@ -7,10 +7,16 @@
 
 var CONFIG = {
   /* URL del web app de Google Apps Script (termina en /exec) */
-  API_URL: '',
-  /* Enlace de la ficha de Dolce Meza en Google Maps ( Places) */
-  GOOGLE_MAPS_REVIEW_URL: 'https://g.page/rVWLuqAAAA'
+  API_URL: ''
 };
+
+/* Fichas de Google Maps, una por sucursal. */
+var SUCURSALES = [
+  { nombre: 'San Manuel', url: 'https://maps.app.goo.gl/PnR2EqjEjffUAQXz9' },
+  { nombre: 'Margaritas', url: 'https://maps.app.goo.gl/YFAj2vbPP4eFX5Nq5' },
+  { nombre: 'Xonaca', url: 'https://maps.app.goo.gl/9xsbTPGjq4pjBcHLA' },
+  { nombre: 'La Joya', url: 'https://maps.app.goo.gl/6RDVdc94EVYg4DBR7' }
+];
 
 var ETIQUETAS_ESTRELLA = {
   1: 'Lo lamentamos',
@@ -37,6 +43,7 @@ var campoFecha = $('#fechaVisita');
 var campoComentarios = $('#comentarios');
 var contadorComentarios = $('#contadorComentarios');
 var grupoProducto = $('#grupoProducto');
+var grupoSucursal = $('#grupoSucursal');
 var cajaOtro = $('#otroCaja');
 var campoProductoOtro = $('#productoOtro');
 var grupoConocimiento = $('#grupoConocimiento');
@@ -52,6 +59,7 @@ var progreso = $('#progreso');
 
 var estado = {
   productos: [],
+  sucursal: '',
   conocimiento: '',
   calificacion: 0,
   enviando: false,
@@ -87,10 +95,10 @@ $('#btnAtras').addEventListener('click', function () {
 
 $('#btnOtraOpinion').addEventListener('click', function () {
   formulario.reset();
-  estado.productos = [];
+estado.productos = [];
+  estado.sucursal = '';
   estado.conocimiento = '';
   estado.calificacion = 0;
-  estado.enviado = false;
   limpiarErrores();
   nota('', '');
   pintarChips();
@@ -197,6 +205,19 @@ pintarEstrellas();
 
 /* ---------------- Chips ---------------- */
 
+(function crearSucursales() {
+  SUCURSALES.forEach(function (sucursal) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.dataset.valor = sucursal.nombre;
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', 'false');
+    b.textContent = sucursal.nombre;
+    $('#chipsSucursal').appendChild(b);
+  });
+})();
+
 function pintarChips() {
   Array.prototype.forEach.call($('#chipsProducto').children, function (chip) {
     var on = estado.productos.indexOf(chip.dataset.valor) > -1;
@@ -204,11 +225,39 @@ function pintarChips() {
     chip.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   cajaOtro.hidden = estado.productos.indexOf('Otro') === -1;
-  Array.prototype.forEach.call($('#chipsConocimiento').children, function (chip) {
-    var on = estado.conocimiento === chip.dataset.valor;
+  pintarGrupoSimple('#chipsConocimiento', 'conocimiento');
+  pintarGrupoSimple('#chipsSucursal', 'sucursal');
+}
+
+function pintarGrupoSimple(selector, clave) {
+  var primero = null;
+  Array.prototype.forEach.call($(selector).children, function (chip) {
+    if (!primero) primero = chip;
+    var on = estado[clave] === chip.dataset.valor;
     chip.classList.toggle('activo', on);
     chip.setAttribute('aria-checked', on ? 'true' : 'false');
-    chip.tabIndex = on || (!estado.conocimiento && chip === $('#chipsConocimiento').firstElementChild) ? 0 : -1;
+    chip.tabIndex = on || (!estado[clave] && chip === primero) ? 0 : -1;
+  });
+}
+
+function conectarGrupoSimple(selector, clave, errorId, grupo) {
+  $(selector).addEventListener('click', function (ev) {
+    var chip = ev.target.closest('.chip');
+    if (!chip) return;
+    estado[clave] = chip.dataset.valor;
+    pintarChips();
+    limpiarError(grupo, errorId);
+    actualizarProgreso();
+  });
+
+  $(selector).addEventListener('keydown', function (ev) {
+    if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
+    ev.preventDefault();
+    var chips = Array.prototype.slice.call(this.children);
+    var i = chips.indexOf(document.activeElement);
+    var sig = chips[(i + (ev.key === 'ArrowRight' ? 1 : chips.length - 1)) % chips.length];
+    sig.focus();
+    sig.click();
   });
 }
 
@@ -236,24 +285,8 @@ campoProductoOtro.addEventListener('input', function () {
   if (campoProductoOtro.value.trim()) limpiarError(cajaOtro, '#errorProductoOtro');
 });
 
-$('#chipsConocimiento').addEventListener('click', function (ev) {
-  var chip = ev.target.closest('.chip');
-  if (!chip) return;
-  estado.conocimiento = chip.dataset.valor;
-  pintarChips();
-  limpiarError(grupoConocimiento, '#errorConocimiento');
-  actualizarProgreso();
-});
-
-$('#chipsConocimiento').addEventListener('keydown', function (ev) {
-  if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
-  ev.preventDefault();
-  var chips = Array.prototype.slice.call(this.children);
-  var i = chips.indexOf(document.activeElement);
-  var sig = chips[(i + (ev.key === 'ArrowRight' ? 1 : chips.length - 1)) % chips.length];
-  sig.focus();
-  sig.click();
-});
+conectarGrupoSimple('#chipsConocimiento', 'conocimiento', '#errorConocimiento', grupoConocimiento);
+conectarGrupoSimple('#chipsSucursal', 'sucursal', '#errorSucursal', grupoSucursal);
 
 pintarChips();
 
@@ -280,9 +313,10 @@ function actualizarProgreso() {
   var listos = 0;
   if (campoFecha.value) listos++;
   if (estado.productos.length) listos++;
+  if (estado.sucursal) listos++;
   if (estado.conocimiento) listos++;
   if (estado.calificacion) listos++;
-  var pct = Math.round((listos / 4) * 100);
+  var pct = Math.round((listos / 5) * 100);
   progresoBarra.style.width = pct + '%';
   progreso.setAttribute('aria-valuenow', String(pct));
 }
@@ -332,6 +366,11 @@ function validar() {
     errores.push(campoProductoOtro);
   }
 
+  if (!estado.sucursal) {
+    mostrarError(grupoSucursal, '#errorSucursal', 'Elige la sucursal donde nos visitaste.');
+    errores.push($('#chipsSucursal').querySelector('.chip'));
+  }
+
   if (!estado.conocimiento) {
     mostrarError(grupoConocimiento, '#errorConocimiento', 'Elige cómo conociste Dolce Meza.');
     errores.push($('#chipsConocimiento').querySelector('.chip'));
@@ -368,6 +407,7 @@ formulario.addEventListener('submit', function (ev) {
   var datos = {
     nombre: campoNombre.value.trim(),
     fechaVisita: campoFecha.value,
+    sucursal: estado.sucursal,
     producto: estado.productos.join(', '),
     productoOtro: estado.productos.indexOf('Otro') > -1 ? campoProductoOtro.value.trim() : '',
     conocimiento: estado.conocimiento,
@@ -475,11 +515,19 @@ function vaciarCola() {
 
 /* ---------------- Pantalla de agradecimiento ---------------- */
 
+function buscarSucursal(nombre) {
+  for (var i = 0; i < SUCURSALES.length; i++) {
+    if (SUCURSALES[i].nombre === nombre) return SUCURSALES[i];
+  }
+  return null;
+}
+
 function mostrarGracias(datos, resultado) {
   estado.enviado = true;
   restaurarBoton();
   formulario.reset();
   estado.productos = [];
+  estado.sucursal = '';
   estado.conocimiento = '';
   estado.calificacion = 0;
   pintarChips();
@@ -488,18 +536,15 @@ function mostrarGracias(datos, resultado) {
   actualizarProgreso();
   limpiarErrores();
 
+  $('#verSucursal').textContent = datos.sucursal;
   $('#verProducto').textContent = datos.producto.replace(/,\s*Otro$/, '') + (datos.productoOtro ? ' · Otro: ' + datos.productoOtro : '');
   $('#verCalificacion').textContent = new Array(datos.calificacion + 1).join('★') + new Array(6 - datos.calificacion).join('☆');
   $('#verFecha').textContent = formatearFecha(datos.fechaVisita);
   $('#resumenRespuesta').hidden = false;
 
-  var enlace = $('#btnGoogle');
-  if (CONFIG.GOOGLE_MAPS_REVIEW_URL) {
-    enlace.href = CONFIG.GOOGLE_MAPS_REVIEW_URL;
-    enlace.hidden = false;
-  } else {
-    enlace.href = 'https://www.google.com/maps/search/?api=1&query=Dolce%20Meza';
-  }
+  var sucursal = buscarSucursal(datos.sucursal);
+  $('#btnGoogle').href = sucursal ? sucursal.url : 'https://www.google.com/maps/search/?api=1&query=Dolce%20Meza';
+  $('#googleTexto').innerHTML = '&iquest;Nos ayudas con una rese&ntilde;a en Google de <strong>' + escapar(datos.sucursal) + '</strong>?<br>Solo toma 30 segundos.';
 
   var nota = $('#graciasNota');
   if (resultado && resultado.encolado) {
@@ -510,6 +555,12 @@ function mostrarGracias(datos, resultado) {
   }
 
   mostrar(pantallaGracias);
+}
+
+function escapar(texto) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(texto || ''));
+  return div.innerHTML;
 }
 
 function formatearFecha(iso) {

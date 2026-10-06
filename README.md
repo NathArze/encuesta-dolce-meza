@@ -42,15 +42,29 @@ Al inicio de `js/app.js` está la configuración:
 
 ```js
 var CONFIG = {
-  API_URL: '',                                  // ← pega aquí la URL /exec
-  GOOGLE_MAPS_REVIEW_URL: 'https://g.page/rVWLuqAAAA'
+  API_URL: ''   // ← pega aquí la URL /exec
 };
 ```
 
-- `API_URL`: la URL `/exec` del paso anterior.
-- `GOOGLE_MAPS_REVIEW_URL`: el enlace de la ficha de Dolce Meza en Google Maps.
-  Se obtiene desde Google Maps → tu negocio → **Compartir** → **Copiar enlace**
-  (o desde el botón *Escribir una reseña*, que ya abre la pantalla de reseña).
+- `API_URL`: la URL `/exec` del paso anterior. Es lo único que hay que cambiar.
+
+Los enlaces de Google Maps ya vienen en `js/app.js`, en la lista `SUCURSALES`
+al inicio del archivo. Para cambiar o agregar una sucursal, edita esa lista
+(`nombre` = lo que verá el cliente, `url` = el enlace de Maps):
+
+```js
+var SUCURSALES = [
+  { nombre: 'San Manuel',  url: 'https://maps.app.goo.gl/PnR2EqjEjffUAQXz9' },
+  { nombre: 'Margaritas',  url: 'https://maps.app.goo.gl/YFAj2vbPP4eFX5Nq5' },
+  { nombre: 'Xonaca',      url: 'https://maps.app.goo.gl/9xsbTPGjq4pjBcHLA' },
+  { nombre: 'La Joya',     url: 'https://maps.app.goo.gl/6RDVdc94EVYg4DBR7' }
+];
+```
+
+Si agregas una sucursal, replica el mismo nombre en `SUCURSALES_VALIDAS` dentro
+de `appscript/Code.gs`, porque el servidor solo acepta esos nombres.
+Cada sucursal tiene su propia ficha, así que la reseña del cliente cae en la
+ficha de la sucursal que visitó.
 
 Si `API_URL` queda vacío, la app sigue funcionando: guarda la opinión en el
 dispositivo y la envía sola cuando haya conexión y la API esté configurada.
@@ -88,6 +102,7 @@ o redes sociales (los clientes que escriban desde casa también pueden opinar).
 | Fecha y hora de respuesta | Fecha real del envío (servidor) |
 | Nombre | Campo opcional del cliente |
 | Fecha de visita | Campo del cliente |
+| Sucursal | `San Manuel`, `Margaritas`, `Xonaca` o `La Joya` |
 | Qué compraste | Puede traer varios: `Pasteles, Gelatina, Otro: Brownies` |
 | Cómo conoció Dolce Meza | Una sola opción |
 | Calificación | 1 a 5 estrellas |

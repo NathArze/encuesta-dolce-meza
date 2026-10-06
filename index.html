@@ -86,6 +86,12 @@
 
       <p class="seccion-titulo"><span class="seccion-num">2</span> Tu visita</p>
 
+      <fieldset class="campo campo--grupo" id="grupoSucursal">
+        <legend>&iquest;En qu&eacute; sucursal nos visitaste? <span class="req" aria-hidden="true">*</span></legend>
+        <div class="chips chips--simple" id="chipsSucursal" role="radiogroup" aria-describedby="errorSucursal"></div>
+        <p class="error" id="errorSucursal" role="alert" hidden></p>
+      </fieldset>
+
       <fieldset class="campo campo--grupo" id="grupoProducto">
         <legend>&iquest;Qu&eacute; compraste? <span class="req" aria-hidden="true">*</span></legend>
         <p class="ayuda">Puedes elegir varias opciones.</p>
@@ -158,6 +164,7 @@
       </p>
 
       <div class="resumen" id="resumenRespuesta" hidden>
+        <div class="resumen__fila"><span>Sucursal</span><strong id="verSucursal">&mdash;</strong></div>
         <div class="resumen__fila"><span>Producto</span><strong id="verProducto">&mdash;</strong></div>
         <div class="resumen__fila"><span>Calificaci&oacute;n</span><strong id="verCalificacion" class="estrellas-mini"></strong></div>
         <div class="resumen__fila"><span>Fecha de visita</span><strong id="verFecha">&mdash;</strong></div>
@@ -165,7 +172,7 @@
 
       <div class="google-cta">
         <p class="google-cta__titulo">&Uacute;ltimo paso</p>
-        <p class="google-cta__texto">&iquest;Nos ayudas con una rese&ntilde;a en Google?<br>Solo takes 30 segundos.</p>
+        <p class="google-cta__texto" id="googleTexto">&iquest;Nos ayudas con una rese&ntilde;a en Google?<br>Solo takes 30 segundos.</p>
         <a class="btn btn--google" id="btnGoogle" href="#" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true" class="google-ico">
             <path fill="#EA4335" d="M12 10.2v3.9h5.5a4.7 4.7 0 0 1-2 3.1l3.2 2.5c1.9-1.7 3-4.3 3-7.3 0-.7-.1-1.4-.2-2H12z"/>

@@ -17,6 +17,7 @@ var CONFIG = {
     'Fecha y hora de respuesta',
     'Nombre',
     'Fecha de visita',
+    'Sucursal',
     'Qué compraste',
     'Cómo conoció Dolce Meza',
     'Calificación',
@@ -28,6 +29,7 @@ var CONFIG = {
 };
 
 var PRODUCTOS_VALIDOS = ['Pasteles', 'Postres', 'Gelatina', 'Otro'];
+var SUCURSALES_VALIDAS = ['San Manuel', 'Margaritas', 'Xonaca', 'La Joya'];
 var CONOCIMIENTO_VALIDOS = [
   'Instagram', 'Facebook', 'Google', 'Recomendación', 'Ya soy cliente', 'Otro'
 ];
@@ -67,6 +69,7 @@ function doPost(e) {
       Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy HH:mm:ss'),
       revisados.datos.nombre,
       revisados.datos.fechaVisita,
+      revisados.datos.sucursal,
       revisados.datos.producto,
       revisados.datos.conocimiento,
       revisados.datos.calificacion,
@@ -134,6 +137,11 @@ function validar(datos) {
     return { error: 'La calificación debe ser de 1 a 5 estrellas.' };
   }
 
+  var sucursal = limpiar(datos.sucursal, 40);
+  if (SUCURSALES_VALIDAS.indexOf(sucursal) === -1) {
+    return { error: 'Falta indicar la sucursal donde nos visitaste.' };
+  }
+
   var productos = limpiar(datos.producto, 200)
     .split(',')
     .map(function (p) { return p.trim(); })
@@ -185,6 +193,7 @@ function validar(datos) {
     datos: {
       nombre: nombre,
       fechaVisita: fechaVisita,
+      sucursal: sucursal,
       producto: productosTexto.join(', '),
       conocimiento: conocimiento,
       calificacion: calificacion,
@@ -224,8 +233,25 @@ function obtenerHoja() {
   if (!hoja) {
     hoja = ss.insertSheet(CONFIG.NOMBRE_HOJA);
     inicializar(hoja);
+    return hoja;
   }
+
+  revisarEncabezados(hoja);
   return hoja;
+}
+
+function revisarEncabezados(hoja) {
+  var actuales = hoja.getRange(1, 1, 1, CONFIG.ENCABEZADOS.length).getValues()[0];
+  var iguales = actuales.length === CONFIG.ENCABEZADOS.length;
+
+  for (var i = 0; iguales && i < CONFIG.ENCABEZADOS.length; i++) {
+    if (String(actuales[i]).trim() !== CONFIG.ENCABEZADOS[i]) iguales = false;
+  }
+
+  if (!iguales) {
+    inicializar(hoja);
+    Logger.log('Encabezados de "' + CONFIG.NOMBRE_HOJA + '" actualizados.');
+  }
 }
 
 function inicializar(hoja) {
@@ -239,15 +265,16 @@ function inicializar(hoja) {
   hoja.setColumnWidth(1, 165);
   hoja.setColumnWidth(2, 150);
   hoja.setColumnWidth(3, 110);
-  hoja.setColumnWidth(4, 170);
-  hoja.setColumnWidth(5, 190);
-  hoja.setColumnWidth(6, 95);
-  hoja.setColumnWidth(7, 420);
-  hoja.getRange('A:G').setVerticalAlignment('middle');
-  hoja.getRange('G:G').setWrap(true);
+  hoja.setColumnWidth(4, 120);
+  hoja.setColumnWidth(5, 170);
+  hoja.setColumnWidth(6, 190);
+  hoja.setColumnWidth(7, 95);
+  hoja.setColumnWidth(8, 420);
+  hoja.getRange('A:H').setVerticalAlignment('middle');
+  hoja.getRange('H:H').setWrap(true);
   hoja.getRange('A:A').setNumberFormat('dd/mm/yyyy hh:mm:ss');
   hoja.getRange('C:C').setNumberFormat('dd/mm/yyyy');
-  hoja.getRange('F:F').setHorizontalAlignment('center');
+  hoja.getRange('G:G').setHorizontalAlignment('center');
 }
 
 function contarFilas() {
@@ -271,6 +298,7 @@ function json(objeto) {
 
 /**
  * Ejecuta esta función una sola vez para crear la hoja y los encabezados.
+ * Si la hoja ya existe pero tiene otros encabezados, los corrige.
  * Después puedes inspeccionar la hoja desde el menú Ver > Registros de ejecución.
  */
 function prepararHoja() {
@@ -278,13 +306,19 @@ function prepararHoja() {
   if (!ss) throw new Error('Abre primero el Google Sheet desde este proyecto.');
 
   var hoja = ss.getSheetByName(CONFIG.NOMBRE_HOJA);
-  if (hoja && hoja.getLastRow() > 0) {
-    Logger.log('La hoja "' + CONFIG.NOMBRE_HOJA + '" ya existe. No se modificó.');
+  if (!hoja) {
+    hoja = ss.insertSheet(CONFIG.NOMBRE_HOJA);
+    inicializar(hoja);
+    Logger.log('Hoja "' + CONFIG.NOMBRE_HOJA + '" creada con los encabezados.');
     return;
   }
 
-  if (!hoja) hoja = ss.insertSheet(CONFIG.NOMBRE_HOJA);
-  inicializar(hoja);
+  if (hoja.getLastRow() === 0) {
+    inicializar(hoja);
+    Logger.log('Encabezados escritos en "' + CONFIG.NOMBRE_HOJA + '".');
+    return;
+  }
 
-  Logger.log('Hoja "' + CONFIG.NOMBRE_HOJA + '" lista con los encabezados.');
+  revisarEncabezados(hoja);
+  Logger.log('Hoja "' + CONFIG.NOMBRE_HOJA + '" revisada (' + (hoja.getLastRow() - 1) + ' respuestas).');
 }
