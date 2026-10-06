@@ -4,6 +4,9 @@ Web app móvil (HTML5 + CSS3 + JavaScript) para que los clientes califiquen su v
 y depois dejen una reseña en Google Maps. Las respuestas se guardan en **Google Sheets**
 mediante **Google Apps Script** como API. No hay backend propio.
 
+**Sitio publicado:** https://natharze.github.io/encuesta-dolce-meza/
+Esa es la URL que debe codificar el código QR.
+
 ```
 encuesta-dolce-meza/
 ├── index.html            App: bienvenida → formulario → agradecimiento
